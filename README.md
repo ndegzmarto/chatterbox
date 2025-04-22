@@ -99,18 +99,20 @@ ChatterBox AI is a simple yet powerful AI chat application built with a FastAPI 
 ### 5. CORS Configuration
 
 Ensure that your FastAPI backend has CORS (Cross-Origin Resource Sharing) enabled to allow requests from your Next.js frontend.  Add the following middleware to your FastAPI application:
-	```
-	from fastapi.middleware.cors import CORSMiddleware
 
-	app.add_middleware(
-	CORSMiddleware,
-	allow_origins=["http://localhost:3000"], # Replace with your frontend's origin
-	allow_credentials=True,
-	allow_methods=[""],
-	allow_headers=[""],
-	)
+		
 
-	```
+		from fastapi.middleware.cors import CORSMiddleware
+
+		app.add_middleware(
+		CORSMiddleware,
+		allow_origins=["http://localhost:3000"], # Replace with your frontend's origin
+		allow_credentials=True,
+		allow_methods=[""],
+		allow_headers=[""],
+		)
+
+		
 
 
 ## Usage
