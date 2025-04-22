@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function Chat({ selectedHistory }) {
   const [question, setQuestion] = useState("");
@@ -8,7 +10,7 @@ export default function Chat({ selectedHistory }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-useEffect(() => {
+  useEffect(() => {
     if (selectedHistory) {
       setQuestion(selectedHistory.question);
       setAnswer(selectedHistory.answer);
@@ -48,18 +50,22 @@ useEffect(() => {
     <div className="flex flex-col h-full">
       {/* Display Area */}
       <div className="flex-1 p-4 overflow-y-auto">
-      {selectedHistory && (
+        {selectedHistory && (
           <div className="bg-gray-700 p-3 rounded mb-2">
             <h3 className="font-semibold mb-1">Question:</h3>
             <p>{selectedHistory.question}</p>
             <h3 className="font-semibold mb-1">Answer:</h3>
-            <p>{selectedHistory.answer}</p>
+              <div className="markdown-body">
+                <ReactMarkdown children={selectedHistory.answer} remarkPlugins={[remarkGfm]} />
+              </div>
           </div>
         )}
         {answer && !selectedHistory && (
           <div className="bg-gray-700 p-3 rounded mb-2">
             <h3 className="font-semibold mb-1">Answer:</h3>
-            <p>{answer}</p>
+            <div className="markdown-body">
+              <ReactMarkdown children={answer} remarkPlugins={[remarkGfm]} />
+            </div>
           </div>
         )}
         {error && <p className="text-red-500">{error}</p>}
