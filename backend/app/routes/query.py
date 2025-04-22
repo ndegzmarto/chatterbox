@@ -31,7 +31,7 @@ def handle_query(request: QueryRequest, db: Session = Depends(get_db)):
         model = "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
         messages = [
             {"role": "system", "content": "you are a helpful assistant"},
-            {"role": "user", "content": "tell me a joke about computers"}
+            {"role": "user", "content": question}
         ]
 
     )

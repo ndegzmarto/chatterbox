@@ -8,7 +8,8 @@ from sqlalchemy import Column, String, DateTime
 from datetime import datetime
 from app.database import Base
 import uuid
-from datetime import datetime, UTC
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 
 class QueryHistory(Base):
@@ -20,5 +21,5 @@ class QueryHistory(Base):
   id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
   question = Column(String, nullable=False)
   answer = Column(String, nullable=False)
-  created_at = Column(DateTime, default=datetime.now(UTC))
+  created_at = Column(DateTime, default=datetime.now(ZoneInfo("Africa/Nairobi")))
 
