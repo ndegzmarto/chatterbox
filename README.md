@@ -26,10 +26,10 @@ ChatterBox AI is a simple yet powerful AI chat application built with a FastAPI 
 
 ### 1. Clone the Repository
 
-	```
+	
 	git clone https://github.com/ndegzmarto/chatterbox
  	cd chatterbox
-	```
+	
 
 
 ### 2. Backend Setup (FastAPI)
