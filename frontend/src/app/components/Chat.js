@@ -1,29 +1,41 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 export default function Chat({ selectedHistory }) {
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState(selectedHistory ? selectedHistory.answer : null);
+  const [conversation, setConversation] = useState([]);  // Array of messages
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const chatContainerRef = useRef(null);
 
+  // Load history if selected
   useEffect(() => {
     if (selectedHistory) {
-      setQuestion(selectedHistory.question);
-      setAnswer(selectedHistory.answer);
+      setConversation([{ role: "user", content: selectedHistory.question }, { role: "assistant", content: selectedHistory.answer }]);
+    } else {
+      setConversation([]); // Clear conversation on new selection
     }
   }, [selectedHistory]);
+
+  // Scroll to bottom on new messages
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [conversation]);
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (!question.trim()) return;
 
+    const userMessage = { role: "user", content: question };
+    setConversation(prev => [...prev, userMessage]); // Add user message immediately
+    setQuestion("");
     setLoading(true);
     setError(null);
-    setAnswer(null);
 
     try {
       const res = await fetch("http://localhost:8000/api/query", {
@@ -38,7 +50,8 @@ export default function Chat({ selectedHistory }) {
       }
 
       const data = await res.json();
-      setAnswer(data.answer);
+      const aiMessage = { role: "assistant", content: data.answer };
+      setConversation(prev => [...prev, aiMessage]); // Add AI response
     } catch (err) {
       setError(err.message);
     } finally {
@@ -48,26 +61,27 @@ export default function Chat({ selectedHistory }) {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Display Area */}
-      <div className="flex-1 p-4 overflow-y-auto">
-        {selectedHistory && (
-          <div className="bg-gray-700 p-3 rounded mb-2">
-            <h3 className="font-semibold mb-1">Question:</h3>
-            <p>{selectedHistory.question}</p>
-            <h3 className="font-semibold mb-1">Answer:</h3>
-              <div className="markdown-body">
-                <ReactMarkdown children={selectedHistory.answer} remarkPlugins={[remarkGfm]} />
-              </div>
-          </div>
-        )}
-        {answer && !selectedHistory && (
-          <div className="bg-gray-700 p-3 rounded mb-2">
-            <h3 className="font-semibold mb-1">Answer:</h3>
-            <div className="markdown-body">
-              <ReactMarkdown children={answer} remarkPlugins={[remarkGfm]} />
+      {/* Chat Display Area */}
+      <div ref={chatContainerRef} className="flex-1 p-4 overflow-y-auto space-y-2">
+        {conversation.map((msg, index) => (
+
+        <div
+          key={index}
+          className={`flex w-full ${msg.role == 'assistant' ? 'justify-start' : 'justify-end'}`}
+        >
+            <div
+              key={index}
+              className={`p-3 rounded-lg ${
+                msg.role === 'assistant' ? 'bg-gray-700 text-left' : 'bg-blue-600 text-right'
+              } w-fit max-w-2/3`}
+            >
+                <ReactMarkdown
+                  children={msg.content}
+                  remarkPlugins={[remarkGfm]}
+                />
             </div>
           </div>
-        )}
+        ))}
         {error && <p className="text-red-500">{error}</p>}
       </div>
 
@@ -87,7 +101,7 @@ export default function Chat({ selectedHistory }) {
             className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
             disabled={loading}
           >
-            {loading ? "Sending..." : "Send"}
+            {loading ? "Sending.." : "Send"}
           </button>
         </form>
       </div>

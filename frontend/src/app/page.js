@@ -3,14 +3,14 @@
 import { useState, useEffect } from "react";
 import Chat from "./components/Chat";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import HistoryItem from "./components/HistoryItem";  // Create this component
-import History from "./components/History";
+
 
 export default function Home() {
   const [tab, setTab] = useState("chat");
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [selectedHistory, setSelectedHistory] = useState(null);
   const [conversationHistory, setConversationHistory] = useState([]);
+
   // Load history from API on component mount
   useEffect(() => {
     fetch('http://localhost:8000/api/history')
@@ -32,12 +32,13 @@ export default function Home() {
   function handleSidebarToggle() {
     setSidebarVisible(!sidebarVisible);
   }
-    function handleHistoryClick(item) {
+  
+  function handleHistoryClick(item) {
     setSelectedHistory(item);
     setTab('chat');
   }
   return (
-    <div className="flex h-screen bg-gray-900 text-white">
+    <div className="flex h-full bg-gray-900 text-white">
       {/* Sidebar Toggle Button */}
       <button
         onClick={handleSidebarToggle}
@@ -72,11 +73,12 @@ export default function Home() {
                     onClick={() => handleHistoryClick(item)}
                     >
                     {item.question}
-                    <span className="block text-xs text-gray-400">
-                      {new Date(item.created_at).toLocaleString()}
-                    </span>
+                  <span className="block text-xs text-gray-400">
+                    {new Date(item.created_at).toLocaleString()}
+                  </span>
                   </button>
                 ))}
+               
               </div>
             </li>
           </ul>
