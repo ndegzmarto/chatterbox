@@ -24,7 +24,7 @@ def handle_query(request: QueryRequest, db: Session = Depends(get_db)):
     question = request.question.strip()
 
     if not question:
-        raise HTTPException(status_code=400, detail="question not available")
+        raise HTTPException(status_code=400, detail="question cannot be empty!")
     
     # llm integration 
     answer = client.chat.completions.create(
